@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
 ---
 title: "Tugas 1"
 author: "Kamilah Nurul Azizah"
@@ -437,8 +435,3 @@ colnames(perbandingan_metode) <- c("SMA","SES")
 perbandingan_metode
 ```
 Berdasarkan nilai SSE, MSE, dan MAPE, metode SES dengan n=0.2 lebih baik karena memiliki ukuran kesalahan yang lebih kecil dibandingkan lainnya. Berdasarkan nilai MAPE sebesar 14.22%, metode tersebut memberikan peramalan dengan akurasi yang baik.
->>>>>>> 508e45090894a8e0bae79810ca482d39ea1338f6
- 
-=======
-
->>>>>>> 8f86f2549458d0a57068fd2f513e3a82adf89e75
