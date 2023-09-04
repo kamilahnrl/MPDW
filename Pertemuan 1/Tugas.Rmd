@@ -48,7 +48,7 @@ points(testing.ts)
 ## Single Moving Average (SMA)
 Ide dasar dari Single Moving Average (SMA) adalah data suatu periode dipengaruhi oleh data periode sebelumnya. Metode pemulusan ini cocok digunakan untuk pola data stasioner atau konstan. Prinsip dasar metode pemulusan ini adalah data pemulusan pada periode ke-t merupakan rata rata dari m buah data pada periode ke-t hingga periode ke (t-m+1). Data pemulusan pada periode ke-t selanjutnya digunakan sebagai nilai peramalan pada periode ke t+1
 
-Pemulusan dengan parameter `m=2`.
+Pemulusan dengan parameter `m=2`
 ```{r}
 data.sma<-SMA(training.ts, n=2)
 data.sma
