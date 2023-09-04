@@ -25,7 +25,7 @@ str(data)
 dim(data)
 ```
 
-Mengubah data agar terbaca sebagai data deret waktu dengan fungsi `ts()` .
+Mengubah data agar terbaca sebagai data deret waktu dengan fungsi `ts()`
 ```{r}
 data.ts <- ts(data$BawangMerah)
 summary(data.ts)
