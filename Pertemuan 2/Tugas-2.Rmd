@@ -1,0 +1,22 @@
+---
+title: "Pertemuan 2"
+author: "Kamilah Nurul Azizah"
+date: "2023-09-09"
+output: html_document
+---
+
+```{r}
+library(dplyr)
+library(TTR)
+library(forecast)
+library(lmtest)
+library(orcutt)
+library(HoRM)
+```
+
+```{r}
+library(rio)
+data <- import("https://raw.githubusercontent.com/kamilahnrl/MPDW/main/Pertemuan%202/data%202.csv")
+str(data)
+```
+
