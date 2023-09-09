@@ -1,0 +1,20 @@
+---
+title: "Pertemuan 2"
+author: "Kamilah Nurul Azizah"
+date: "2023-09-09"
+output: html_document
+---
+
+```{r}
+library(dplyr)
+library(TTR)
+library(forecast)
+library(lmtest)
+library(orcutt)
+library(HoRM)
+```
+
+```{r}
+
+```
+
