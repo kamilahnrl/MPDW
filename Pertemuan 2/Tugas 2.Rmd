@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ---
 title: "Pertemuan 2"
 author: "Kamilah Nurul Azizah"
@@ -23,4 +24,6 @@ str(data)
 ```{r}
 
 ```
+=======
+>>>>>>> 20d7339a0045f3d7dbfe2e065e8acaa191181071
 
