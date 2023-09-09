@@ -20,3 +20,7 @@ data <- import("https://raw.githubusercontent.com/kamilahnrl/MPDW/main/Pertemuan
 str(data)
 ```
 
+```{r}
+
+```
+
