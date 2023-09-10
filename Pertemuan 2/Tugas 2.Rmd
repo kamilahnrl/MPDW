@@ -23,11 +23,142 @@ str(data)
 ## Eksplorasi Data
 ```{r}
 #Membentuk objek time series
-data.ts<-ts(data$ipm)
+data.ts<-ts(data$TEMP)
 data.ts
 
 #Membuat plot time series
-ts.plot(data.ts, xlab="Time Period ", ylab="IPM", main= "Time Series Plot of IPM")
+ts.plot(data.ts, xlab="Time Period ", ylab="Temperature", main= "Time Series Plot of Temperature")
 points(data.ts)
+```
+
+## Regresi
+```{r}
+model<- lm(TEMP~HUMID+SOLAR, data = data)
+summary(model)
+```
+Model yang dihasilkan adalah $$y_i=53.565604+0.5873x_t$$ Berdasarkan ringkasan model dapat diketahui bahwa hasil uji F memiliki *p-value* \< $\alpha$ (5%). Artinya, minimal terdapat satu variabel yang berpengaruh nyata terhadap model. Hasil uji-t parsial kedua parameter regresi, yaitu intersep dan koefisien regresi juga menunjukkan hal yang sama, yaitu memiliki *p-value* \< $\alpha$ (5%) sehingga nyata dalam taraf 5%. Selanjutnya dapat dilihat juga nilai $R^2=0.9934$. Artinya, sebesar 99.34% keragaman nilai IPM dapat dijelaskan oleh peubah tahun. Hasil ini menunjukkan hasil yang bagus, seolah mendapatkan hasil terbaik. Namun, kita perlu melakukan uji terhadap sisaannya seperti berikut ini.
+
+```{r}
+#sisaan dan fitted value
+sisaan<- residuals(model)
+fitValue<- predict(model)
+
+#Diagnostik dengan eksploratif
+par(mfrow = c(2,2))
+qqnorm(sisaan)
+qqline(sisaan, col = "steelblue", lwd = 2)
+plot(fitValue, sisaan, col = "steelblue", pch = 20, xlab = "Sisaan", ylab = "Fitted Values", main = "Sisaan vs Fitted Values")
+abline(a = 0, b = 0, lwd = 2)
+hist(sisaan, col = "steelblue")
+plot(seq(1,99,1), sisaan, col = "steelblue", pch = 20, xlab = "Sisaan", ylab = "Order", main = "Sisaan vs Order")
+lines(seq(1,99,1), sisaan, col = "red")
+abline(a = 0, b = 0, lwd = 2)
+```
+
+Dua plot di samping kiri digunakan untuk melihat apakah sisaan menyebar normal. Normal Q-Q Plot di atas menunjukkan bahwa sisaan cenderung menyebar normal, tetapi histogram dari sisaan tidak menunjukkan demikian. Selanjutnya, dua plot di samping kanan digunakan untuk melihat autokorelasi. Plot Sisaan vs *Fitted Value* dan Plot Sisaan vs *Order* menunjukkan adanya pola pada sisaan. Untuk lebih lanjut akan digunakan uji formal melihat normalitas sisaan dan plot ACF dan PACF untuk melihat apakah ada autokorelasi atau tidak.
+
+```{r}
+#Melihat Sisaan Menyebar Normal/Tidak
+#H0: sisaan mengikuti sebaran normal
+#H1: sisaan tidak mengikuti sebaran normal
+shapiro.test(sisaan)
+ks.test(sisaan, "pnorm", mean=mean(sisaan), sd=sd(sisaan))
+```
+
+Berdasarkan uji formal Saphiro-Wilk dan Kolmogorov-Smirnov didapatkan nilai *p-value* \> $\alpha$ (5%). Artinya, cukup bukti untuk menyatakan sisaan berdistribusi normal.
+
+```{r}
+#ACF dan PACF identifikasi autokorelasi
+par(mfrow = c(1,2))
+acf(sisaan)
+pacf(sisaan)
+```
+
+Berdasarkan plot ACF dan PACF, terlihat semua dalam rentang batas dan tidak ada yang signifikan. Namun, untuk lebih memastikan akan dilakukan uji formal dengan uji Durbin Watson.
+
+```{r}
+#Deteksi autokorelasi dengan uji-Durbin Watson
+#H0: tidak ada autokorelasi
+#H1: ada autokorelasi
+dwtest<-dwtest(model)
+```
+
+Berdasarkan hasil DW Test, didapatkan nilai $DW = 0.110$ dan *p-value* = $2.2e-16$. Berdasarkan tabel Durbin-Watson diperoleh nilai $DL = 1.748$ dan $DU = 1.789$. Nilai DW kurang dari nilai DL menunjukkan bahwa berada di daerah autokorelasi positif. Artinya, terdapat cukup bukti bahwa terdapat autokorelasi positif pada taraf $5%$. Selain itu, dari nilai *p-value* \< 0.05 dapat disimpulkan bahwa tolak H0, cukup bukti mengatakan adanya autokorelasi. Oleh karena itu, diperlukan penangan autokorelasi. Penanganan yang akan digunakan menggunakan dua metode, yaitu Cochrane-Orcutt dan Hildret-Lu.
+
+## Penanganan Autokorelasi
+### Metode Cochrane-Orcutt
+Penanganan metode Cochrane-Orcutt dapat dilakukan dengan bantuan packages Orcutt pada aplikasi `R`.
+
+```{r}
+#Penanganan Autokorelasi Cochrane-Orcutt
+modelCO<-cochrane.orcutt(model)
+modelCO
+```
+
+Hasil keluaran model setelah dilakukan penanganan adalah sebagai berikut. $$y_i=-1062.042646+0.559755x_t$$ Hasil juga menunjukkan bahwa nilai DW dan p-value meningkat menjadi $1.49014$ dan $0.09403$. Nilai DW sudah berada pada rentang DU \< DW \< 4-DU atau $1.331 < DW < 2.669$. Hal tersebut juga didukung dengan nilai *p-value* \> 0.05, artinya belum cukup bukti menyatakan bahwa sisaan terdapat autokorelasi pada taraf nyata 5%. Untuk nilai $ρ ̂$ optimum yang digunakan adalah $0.3409214$. Nilai tersebut dapat diketahui dengan *syntax* berikut.
+
+```{r}
+#Rho optimum
+rho<- modelCO$rho
+rho
+```
+
+### Metode Hildreth-Lu
+
+Penanganan kedua adalah menggunakan metode Hildreth-Lu. Metode ini akan mencari nilai SSE terkecil dan dapat dicari secara manual maupun menggunakan packages. Jika menggunakan packages, gunakan `library` *packages* `HORM`.
+
+```{r}
+#Penanganan Autokorelasi Hildreth lu
+# Hildreth-Lu
+hildreth.lu.func<- function(r, model){
+  x1 <- model.matrix(model)[,2]
+  x2 <- model.matrix(model)[,3]
+  y <- model.response(model.frame(model))
+  n <- length(y)
+  t <- 3:n
+  y <- y[t]-r*y[t-1]
+  x1 <- x1[t]-r*x1[t-1]
+  x2 <- x2[t]-r*x2[t-1]
+  
+  return(lm(y~x1+x2))
+}
+
+#Pencariab rho yang meminimumkan SSE
+r <- c(seq(0.1,0.9, by= 0.1))
+tab <- data.frame("rho" = r, "SSE" = sapply(r, function(i){deviance(hildreth.lu.func(i, model))}))
+round(tab, 4)
+```
+
+Pertama-tama akan dicari di mana kira-kira $ρ$ yang menghasilkan SSE minimum. Pada hasil di atas terlihat $ρ$ minimum ketika 0.3. Namun, hasil tersebut masih kurang teliti sehingga akan dicari kembali $ρ$ yang lebih optimum dengan ketelitian yang lebih. Jika sebelumnya jarak antar $ρ$ yang dicari adalah 0.1, kali ini jarak antar $ρ$ adalah 0.001 dan dilakukan pada selang 0.2 sampai dengan 0.5.
+
+```{r}
+#Rho optimal di sekitar 0.4
+rOpt <- seq(0.7,0.9, by= 0.001)
+tabOpt <- data.frame("rho" = rOpt, "SSE" = sapply(rOpt, function(i){deviance(hildreth.lu.func(i, model))}))
+head(tabOpt[order(tabOpt$SSE),])
+
+#Grafik SSE optimum
+par(mfrow = c(1,1))
+plot(tab$SSE ~ tab$rho , type = "l", xlab = "Rho", ylab = "SSE")
+abline(v = tabOpt[tabOpt$SSE==min(tabOpt$SSE),"rho"], lty = 2, col="red",lwd=2)
+text(x=0.9, y=0.2397500, labels = "rho=0.9", cex = 0.8)
+```
+
+Perhitungan yang dilakukan aplikasi `R` menunjukkan bahwa nilai $ρ$ optimum, yaitu saat SSE terkecil terdapat pada nilai $ρ=0.341$. Hal tersebut juga ditunjukkan pada plot. Selanjutnya, model dapat didapatkan dengan mengevaluasi nilai $ρ$ ke dalam fungsi `hildreth.lu.func`, serta dilanjutkan dengan pengujian autokorelasi dengan uji Durbin-Watson. Namun, setelah pengecekan tersebut tidak lupa koefisien regresi tersebut digunakan untuk transformasi balik. Persamaan hasil transformasi itulah yang menjadi persamaan sesungguhnya.
+
+```{r}
+#Model terbaik
+modelHL <- hildreth.lu.func(0.9, model)
+summary(modelHL)
+
+#Transformasi Balik
+cat("y = ", coef(modelHL)[1]/(1-0.9), coef(modelHL)[2],"x1", "+", coef(modelHL)[3],"x2", sep = "")
+```
+
+Setelah dilakukan tranformasi balik, didapatkan model dengan metode Hildreth-Lu sebagai berikut. $$y_i=-1062.032+0.5597492x_t$$
+
+```{r}
+#Deteksi autokorelasi
+dwtest(modelHL)
 ```
 
