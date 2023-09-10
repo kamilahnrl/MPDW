@@ -1,4 +1,4 @@
-  MONTH     DAY     YEAR     HOUR     TEMP     HUMID    SOLAR    WIND
+  MONTH    DAY     YEAR     HOUR     TEMP     HUMID    SOLAR    WIND
        1       16       90        0     60.3   0.0097      0.7     6.66
        1       16       90      100     59.5   0.0103      0.7     8.55
        1       16       90      200     59.3   0.0108      0.7     6.58
