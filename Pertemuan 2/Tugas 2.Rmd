@@ -50,8 +50,8 @@ qqline(sisaan, col = "steelblue", lwd = 2)
 plot(fitValue, sisaan, col = "steelblue", pch = 20, xlab = "Sisaan", ylab = "Fitted Values", main = "Sisaan vs Fitted Values")
 abline(a = 0, b = 0, lwd = 2)
 hist(sisaan, col = "steelblue")
-plot(seq(1,99,1), sisaan, col = "steelblue", pch = 20, xlab = "Sisaan", ylab = "Order", main = "Sisaan vs Order")
-lines(seq(1,99,1), sisaan, col = "red")
+plot(seq(1,100,1), sisaan, col = "steelblue", pch = 20, xlab = "Sisaan", ylab = "Order", main = "Sisaan vs Order")
+lines(seq(1,100,1), sisaan, col = "red")
 abline(a = 0, b = 0, lwd = 2)
 ```
 
@@ -102,6 +102,27 @@ Hasil keluaran model setelah dilakukan penanganan adalah sebagai berikut. $$y_i=
 rho<- modelCO$rho
 rho
 ```
+Selanjutnya akan dilakukan transformasi secara manual dengan syntax berikut ini.
+
+```{r}
+#Transformasi Manual
+TEMP.trans<- data$TEMP[-1]-data$TEMP[-100]*rho
+HUMID.trans<- data$HUMID[-1]-data$HUMID[-100]*rho
+SOLAR.trans<- data$SOLAR[-1]-data$SOLAR[-100]*rho
+modelCOmanual<- lm(TEMP.trans~HUMID.trans+SOLAR.trans)
+summary(modelCOmanual)
+```
+
+```{r}
+#Mencari Penduga Koefisien Regresi setelah Transformasi ke Persamaan Awal
+b0bintang <- modelCOmanual$coefficients[1]
+b0 <- b0bintang/(1-rho)
+b1 <- modelCOmanual$coefficients[2]
+b2 <- modelCOmanual$coefficients[3]
+b0
+b1
+b2
+```
 
 ### Metode Hildreth-Lu
 
@@ -124,7 +145,7 @@ hildreth.lu.func<- function(r, model){
 }
 
 #Pencariab rho yang meminimumkan SSE
-r <- c(seq(0.1,0.9, by= 0.1))
+r <- c(seq(0.1,1, by= 0.1))
 tab <- data.frame("rho" = r, "SSE" = sapply(r, function(i){deviance(hildreth.lu.func(i, model))}))
 round(tab, 4)
 ```
@@ -133,7 +154,7 @@ Pertama-tama akan dicari di mana kira-kira $ρ$ yang menghasilkan SSE minimum. P
 
 ```{r}
 #Rho optimal di sekitar 0.4
-rOpt <- seq(0.7,0.9, by= 0.001)
+rOpt <- seq(0.7,0.99, by= 0.001)
 tabOpt <- data.frame("rho" = rOpt, "SSE" = sapply(rOpt, function(i){deviance(hildreth.lu.func(i, model))}))
 head(tabOpt[order(tabOpt$SSE),])
 
@@ -148,11 +169,11 @@ Perhitungan yang dilakukan aplikasi `R` menunjukkan bahwa nilai $ρ$ optimum, ya
 
 ```{r}
 #Model terbaik
-modelHL <- hildreth.lu.func(0.9, model)
+modelHL <- hildreth.lu.func(0.95, model)
 summary(modelHL)
 
 #Transformasi Balik
-cat("y = ", coef(modelHL)[1]/(1-0.9), coef(modelHL)[2],"x1", "+", coef(modelHL)[3],"x2", sep = "")
+cat("y = ", coef(modelHL)[1]/(1-0.95), "+", coef(modelHL)[2],"x1", "+", coef(modelHL)[3],"x2", sep = "")
 ```
 
 Setelah dilakukan tranformasi balik, didapatkan model dengan metode Hildreth-Lu sebagai berikut. $$y_i=-1062.032+0.5597492x_t$$
@@ -162,3 +183,21 @@ Setelah dilakukan tranformasi balik, didapatkan model dengan metode Hildreth-Lu 
 dwtest(modelHL)
 ```
 
+Hasil uji Durbin-Watson juga menunjukkan bawah nilai DW sebesar $1.4092$ berada pada selang daerah tidak ada autokorelasi, yaitu pada rentang DU \< DW \< 4-DU atau $1.331 < DW < 2.669$. Hal tersebut juga didukung oleh *p-value* sebesar $0.09404$, di mana *p-value* \> $\alpha$=5%. Artinya tak tolak $H_0$ atau belum cukup bukti menyatakan bahwa ada autokorelasi dalam data nilai IPM dengan metode Hildreth-Lu pada taraf nyata 5%.
+
+Terakhir, akan dibandingkan nilai SSE dari ketiga metode (metode awal, metode Cochrane-Orcutt, dan Hildreth-Lu).
+
+```{r}
+#Perbandingan
+sseModelawal <- anova(model)$`Sum Sq`[2]
+sseModelCO <- anova(modelCOmanual)$`Sum Sq`[2]
+sseModelHL <- anova(modelHL)$`Sum Sq`[2]
+mseModelawal <- sseModelawal/length(data$TEMP)
+mseModelCO <- sseModelCO/length(data$TEMP)
+mseModelHL <- sseModelHL/length(data$TEMP)
+akurasi <- matrix(c(sseModelawal,sseModelCO,sseModelHL,
+                    mseModelawal,mseModelCO,mseModelHL),nrow=2,ncol=3,byrow = T)
+colnames(akurasi) <- c("Model Awal", "Model Cochrane-Orcutt", "Model Hildreth-Lu")
+row.names(akurasi) <- c("SSE","MSE")
+akurasi
+```
