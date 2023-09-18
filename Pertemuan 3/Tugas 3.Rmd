@@ -64,7 +64,7 @@ model.koyck <- koyckDlm(x = train$Xt, y = train$Yt)
 summary(model.koyck)
 ```
 
-Dari hasil tersebut, didapat bahwa peubah $x_t$ dan $y_{t-1}$ memiliki nilai $P-Value<0.05$. Hal ini menunjukkan bahwa peubah $x_t$ dan $y_{t-1}$ berpengaruh signifikan terhadap $y$. Adapun model keseluruhannya adalah sebagai berikut
+Dari hasil tersebut, menunjukkan bahwa peubah $y_{t-1}$ berpengaruh signifikan, artinya nilai suhu saat ini dipengaruhi oleh nilai suhu sebelumnya. Adapun model keseluruhannya adalah sebagai berikut
 
 $$
 \hat{Y_t}=-3.1166-436.8837X_t+1.1381Y_{t-1}
@@ -116,9 +116,11 @@ $$
 
 Adapun hasil peramalan 20 periode kedepan menggunakan model tersebut adalah sebagai berikut
 
+### Peramalan dan Akurasi
 ```{r}
-#peramalan dan akurasi
+#peramalan
 fore.dlm <- forecast(model = model.dlm, x=test$Xt, h=20)
+fore.dlm
 
 #akurasi data testing
 mape.dlm<- MAPE(fore.dlm$forecasts, test$Yt)
@@ -129,7 +131,8 @@ mape.dlm.train <- GoF(model.dlm)["MAPE"]
 mape.dlm.train
 ```
 
-Model tersebut merupakan model yang sangat baik dengan nilai MAPE yang kurang dari 10%.
+Model tersebut merupakan model yang sangat baik dengan nilai MAPE yang kurang dari 10%. Selain itu, terlihat bahwa nilai MAPE keduanya tidak jauh berbeda. Artinya, model regresi dengan distribusi lag ini tidak `overfitted` atau `underfitted`
+
 
 ## Model Autoregressive Distributed Lag (ARDL)
 
@@ -159,7 +162,7 @@ Selanjutnya dapat dilakukan pemodelan dengan nilai $p$ dan $q$ optimum.
 model.ardl <- ardlDlm(x = train$Xt, y = train$Yt, p = 15 , q = 6)
 summary(model.ardl)
 ```
-Hasil di atas menunjukkan bahwa peubah $x_{t}$, $x_{t-2}$, $x_{t-4}$, $x_{t-8}$, $x_{t-9}$ berpengaruh signifikan terhadap $y_t$. Model keseluruhannya adalah sebagai berikut:
+Hasil di atas menunjukkan bahwa peubah $x_{t}$, $x_{t-4}$, $x_{t-8}$, $x_{t-9}$ berpengaruh signifikan terhadap $y_t$. Artinya, nilai suhu saat ini dipengaruhi oleh nilai kelembaban saat ini, 4 periode sebelumnya, 8 periode sebelumnya, dan 9 periode sebelumnya. Model keseluruhannya adalah sebagai berikut:
 
 $$
 \hat{Y}=18.0742+402.8463X_t+...-0.1080Y_{t-6}
@@ -169,13 +172,6 @@ $$
 ```{r}
 fore.ardl <- forecast(model = model.ardl, x=test$Xt, h=20)
 fore.ardl
-```
-
-Data di atas merupakan hasil peramalan untuk 20 periode ke depan menggunakan Model Autoregressive dengan $p=15$ dan $q=6$.
-
-```{r}
-mape.ardl <- MAPE(fore.ardl$forecasts, test$Yt)
-mape.ardl
 
 #akurasi data testing
 mape.ardl <- MAPE(fore.ardl$forecasts, test$Yt)
