@@ -455,3 +455,4 @@ Berdasarkan scatterplot tersebut, terlihat bahwa terdapat hubungan positif antar
 ```{r}
 cor(yt_arma,yt_3_arma)
 ```
+
