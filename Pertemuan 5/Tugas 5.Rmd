@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ---
 title: "Tugas 5"
 author: "Kamilah Nurul Azizah"
@@ -176,6 +175,4 @@ bc$x[bc$y > max(bc$y) - 1/2 * qchisq(.95,1)]
 Gambar di atas menunjukkan nilai *rounded value* ($\lambda$) optimum sebesar **-0.71** dan pada selang kepercayaan 95% nilai memiliki batas bawah **-1.03** dan batas atas **-0.30**. Selang tersebut tidak memuat nilai 1 sehingga dapat dikatakan bahwa data tidak stasioner dalam ragam.
 
 Dengan demikian, data stasioner dalam rataan tetapi tidak stasioner dalam ragam.
-=======
 
->>>>>>> fd6a8701b12d445da51b966b0dfb2ba87267cece
