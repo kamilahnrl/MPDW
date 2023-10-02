@@ -8,7 +8,7 @@ output:
     toc_float: true
 ---
 
-## library
+## Library
 ```{r, warning=FALSE,error=FALSE,message=FALSE}
 library(ggplot2)
 library(tsibble)
@@ -34,11 +34,14 @@ mean(data$BawangMerah)
 ```
 Plot deret waktu di atas menunjukkan bahwa data stasioner dalam rataan, ditandai dengan data yang menyebar di sekitar nilai tengahnya (30426.1) dan tidak stasioner dalam ragam, ditandai dengan lebar pita yang berbeda.
 
+## Plot ACF
 ```{r, warning=FALSE,error=FALSE}
 acf(data.ts)
 ```
+
 Berdasarkan plot ACF, terlihat bahwa plot ACF pada data tersebut *tails off* atau turun secara lambat. Hal ini memungkinkan bahwa data tidak stasioner.
 
+## Uji ADF
 ```{r, warning=FALSE,error=FALSE}
 tseries::adf.test(data.ts)
 ```
@@ -75,7 +78,6 @@ mean(data1)
 var(data1)
 ```
 
-
 #### Plot Time Series
 
 ```{r}
@@ -87,7 +89,6 @@ data1 |> as_tsibble() |>
 
 Plot deret waktu di atas menunjukkan bahwa data tidak stasioner dalam rataan, ditandai dengan data yang tidak menyebar di sekitar nilai tengahnya (25772.22) dan stasioner dalam ragam, ditandai dengan lebar pita yang cenderung sama.
 
-
 #### Plot ACF
 
 ```{r}
@@ -95,7 +96,6 @@ acf(data1)
 ```
 
 Berdasarkan plot ACF, terlihat bahwa plot ACF pada data tersebut *tails off* atau turun secara lambat. Hal ini memungkinkan bahwa data tidak stasioner.
-
 
 #### Uji ADF
 
@@ -108,7 +108,6 @@ $H_0$ : Data tidak stasioner dalam rataan
 $H_1$ : Data stasioner dalam rataan
 
 Berdasarkan uji ADF tersebut, didapat *p-value* sebesar 0.5623 yang lebih besar dari taraf nyata 5% sehingga tidak tolak $H_0$ dan menandakan bahwa data tidak stasioner dalam rataan. Hal ini sesuai dengan hasil eksplorasi menggunakan plot time series dan plot ACF.
-
 
 #### Plot Boxcox
 
@@ -134,7 +133,6 @@ mean(data2)
 var(data2)
 ```
 
-
 #### Plot Time Series
 
 ```{r}
@@ -146,7 +144,6 @@ data2 |> as_tsibble() |>
 
 Plot deret waktu di atas menunjukkan bahwa data stasioner dalam rataan, ditandai dengan data yang menyebar di sekitar nilai tengahnya (32469.27) dan stasioner dalam ragam, ditandai dengan lebar pita yang cenderung sama.
 
-
 #### Plot ACF
 
 ```{r}
@@ -154,7 +151,6 @@ acf(data2)
 ```
 
 Berdasarkan plot ACF, terlihat bahwa plot ACF pada data tersebut cenderung *tails off* secara lambat dan membentuk gelombang sinus.
-
 
 #### Uji ADF
 
@@ -167,7 +163,6 @@ $H_0$ : Data tidak stasioner dalam rataan
 $H_1$ : Data stasioner dalam rataan
 
 Berdasarkan uji ADF tersebut, didapat *p-value* sebesar 0.0184 yang lebih kecil dari taraf nyata 5% sehingga tolak $H_0$ dan menandakan bahwa data stasioner dalam rataan. Hal ini sesuai dengan hasil eksplorasi menggunakan plot time series dan plot ACF.
-
 
 #### Plot Boxcox
 
