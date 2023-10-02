@@ -9,7 +9,7 @@ output:
 ---
 
 ## library
-```{r, warning=FALSE,error=FALSE}
+```{r, warning=FALSE,error=FALSE,message=FALSE}
 library(ggplot2)
 library(tsibble)
 library(tseries)
@@ -23,7 +23,7 @@ data <- import("https://raw.githubusercontent.com/kamilahnrl/mpdw/main/Data/data
 str(data)
 ```
 
-### Plot *Time Series*
+## Plot *Time Series*
 ```{r, warning=FALSE,error=FALSE}
 data.ts <- ts(data$BawangMerah)
 plot <- data.ts |> as_tsibble() |> 
@@ -49,7 +49,7 @@ $H_1$ : Data stasioner dalam rataan
 
 Berdasarkan uji ADF tersebut, didapat *p-value* sebesar 0.01 yang lebih kecil dari taraf nyata 5% sehingga tolak $H_0$ dan menandakan bahwa data stasioner dalam rataan. 
 
-### Plot Box-Cox
+## Plot Box-Cox
 
 ```{r}
 index <- seq(1:295)
@@ -65,15 +65,16 @@ Gambar di atas menunjukkan nilai *rounded value* ($\lambda$) optimum sebesar **-
 
 Dengan demikian, data stasioner dalam rataan tetapi tidak stasioner dalam ragam.
 
-### Partisi Data
+## Partisi Data
 
-#### Bagian 1
+### Bagian 1
 
 ```{r}
 data1 <- data.ts[1:90] |> ts()
 mean(data1)
 var(data1)
 ```
+
 
 #### Plot Time Series
 
@@ -86,6 +87,7 @@ data1 |> as_tsibble() |>
 
 Plot deret waktu di atas menunjukkan bahwa data tidak stasioner dalam rataan, ditandai dengan data yang tidak menyebar di sekitar nilai tengahnya (25772.22) dan stasioner dalam ragam, ditandai dengan lebar pita yang cenderung sama.
 
+
 #### Plot ACF
 
 ```{r}
@@ -93,6 +95,7 @@ acf(data1)
 ```
 
 Berdasarkan plot ACF, terlihat bahwa plot ACF pada data tersebut *tails off* atau turun secara lambat. Hal ini memungkinkan bahwa data tidak stasioner.
+
 
 #### Uji ADF
 
@@ -105,6 +108,7 @@ $H_0$ : Data tidak stasioner dalam rataan
 $H_1$ : Data stasioner dalam rataan
 
 Berdasarkan uji ADF tersebut, didapat *p-value* sebesar 0.5623 yang lebih besar dari taraf nyata 5% sehingga tidak tolak $H_0$ dan menandakan bahwa data tidak stasioner dalam rataan. Hal ini sesuai dengan hasil eksplorasi menggunakan plot time series dan plot ACF.
+
 
 #### Plot Boxcox
 
@@ -122,13 +126,14 @@ Gambar di atas menunjukkan nilai *rounded value* ($\lambda$) optimum sebesar **0
 
 Dengan demikian, data stasioner dalam ragam tetapi tidak stasioner dalam rataan.
 
-#### Bagian 2
+### Bagian 2
 
 ```{r}
 data2 <- data.ts[91:295] |> ts()
 mean(data2)
 var(data2)
 ```
+
 
 #### Plot Time Series
 
@@ -141,6 +146,7 @@ data2 |> as_tsibble() |>
 
 Plot deret waktu di atas menunjukkan bahwa data stasioner dalam rataan, ditandai dengan data yang menyebar di sekitar nilai tengahnya (32469.27) dan stasioner dalam ragam, ditandai dengan lebar pita yang cenderung sama.
 
+
 #### Plot ACF
 
 ```{r}
@@ -148,6 +154,7 @@ acf(data2)
 ```
 
 Berdasarkan plot ACF, terlihat bahwa plot ACF pada data tersebut cenderung *tails off* secara lambat dan membentuk gelombang sinus.
+
 
 #### Uji ADF
 
@@ -160,6 +167,7 @@ $H_0$ : Data tidak stasioner dalam rataan
 $H_1$ : Data stasioner dalam rataan
 
 Berdasarkan uji ADF tersebut, didapat *p-value* sebesar 0.0184 yang lebih kecil dari taraf nyata 5% sehingga tolak $H_0$ dan menandakan bahwa data stasioner dalam rataan. Hal ini sesuai dengan hasil eksplorasi menggunakan plot time series dan plot ACF.
+
 
 #### Plot Boxcox
 
