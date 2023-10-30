@@ -9,11 +9,11 @@ output:
     toc_float: yes
 ---
 
-G1401211001	Karimatu Ain
-G1401211022	Much.Fazrin Sepranjani Fatah
-G1401211073	Kamilah Nurul Azizah
-G1401211087	Pingkan Febbe Fiorela Kereh
-G1401211106	Megawati Roito Panjaitan
+G1401211001	Karimatu Ain  
+G1401211022	Much.Fazrin Sepranjani Fatah  
+G1401211073	Kamilah Nurul Azizah  
+G1401211087	Pingkan Febbe Fiorela Kereh  
+G1401211106	Megawati Roito Panjaitan  
 
 ## Packages dan Data
 
@@ -40,7 +40,7 @@ library(aTSA)
 
 ### Import Data
 
-data ini merupakan data harga bawang merah (rupiah/kg) di kota Surabaya perminggu (Januari 2018 - Agustus 2023) yang bersumber dari bi.go.id 
+Data yang digunakan merupakan data harga bawang merah (rupiah/kg) di kota Surabaya perminggu (Januari 2018 - Agustus 2023) yang bersumber dari bi.go.id 
 
 ```{r, warning=FALSE,error=FALSE,message=FALSE}
 library(rio)
