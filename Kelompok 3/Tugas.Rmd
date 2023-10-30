@@ -44,7 +44,7 @@ data ini merupakan data harga bawang merah (rupiah/kg) di kota Surabaya permingg
 
 ```{r, warning=FALSE,error=FALSE,message=FALSE}
 library(rio)
-data <- import("https://raw.githubusercontent.com/kamilahnrl/mpdw/main/Data/data.xlsx")
+data <- import("https://raw.githubusercontent.com/kamilahnrl/mpdw/main/Kelompok%203/data.xlsx")
 str(data)
 ```
 
